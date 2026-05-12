@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Activity 7 - Pagination</title>
+    <link rel="icon" href="WENDY.jpg" type="image/jpg">
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(160deg, #ffffff 60%, #e8f4fd 80%, #b0d9f0 100%);
+            min-height: 100vh;
+            color:#1a3c5e;
+        }
+
+        /* NAVIGATION */
+        nav{
+            position:sticky;
+            top:0;
+            z-index:999;
+            background:#ffffff;
+            backdrop-filter: blur(10px);
+            padding:15px 25px;
+            display:flex;
+            justify-content:center;
+            flex-wrap:wrap;
+            gap:12px;
+            border-bottom:2px solid #87ceeb;
+        }
+
+        nav a{
+            text-decoration:none;
+            color:#1a3c5e;
+            background:#e8f4fd;
+            padding:10px 18px;
+            border-radius:30px;
+            font-size:14px;
+            font-weight:bold;
+            transition:0.3s;
+        }
+
+        nav a:hover{
+            background:#2a9fd6;
+            color:white;
+        }
+
+        /* LOGIN */
+        #login-screen{
+            position:fixed;
+            inset:0;
+            z-index:9999;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:linear-gradient(135deg,#ffffff 60%,#87ceeb 85%,#2a9fd6 100%);
+        }
+
+        #main-content{
+            display:none;
+        }
+
+        .login-box{
+            width:360px;
+            background:white;
+            padding:40px;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.1);
+            text-align:center;
+        }
+
+        .login-box h1{
+            font-size:30px;
+            margin-bottom:10px;
+            color:#222;
+        }
+
+        .login-box p{
+            color:#777;
+            margin-bottom:20px;
+        }
+
+        .login-box input{
+            width:100%;
+            padding:14px;
+            margin-bottom:15px;
+            border-radius:10px;
+            border:1px solid #ccc;
+            outline:none;
+            font-size:14px;
+        }
+
+        .login-box input:focus{
+            border-color:#2a9fd6;
+        }
+
+        .login-box button{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:10px;
+            background:#2a9fd6;
+            color:white;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .login-box button:hover{
+            background:#1a7abf;
+        }
+
+        .link{
+            margin-top:15px;
+            font-size:13px;
+            color:#777;
+        }
+
+        .link a{
+            color:#111;
+            text-decoration:none;
+        }
+
+        .error-msg{
+            display:none;
+            color:red;
+            margin-bottom:10px;
+            font-size:13px;
+        }
+
+        /* PAGES */
+        .page{
+            display:none;
+        }
+
+        /* PAGE 1 */
+        #page1{
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background: linear-gradient(135deg, #ffffff 55%, #d0eafa 80%, #87ceeb 100%);
+            text-align:center;
+            padding:40px;
+        }
+
+        .hero{
+            max-width:700px;
+        }
+
+        .hero-tag{
+            letter-spacing:4px;
+            text-transform:uppercase;
+            color:#888;
+            margin-bottom:20px;
+        }
+
+        .hero-title{
+            font-size:clamp(40px,6vw,70px);
+            line-height:1.1;
+            margin-bottom:20px;
+            color:#222;
+        }
+
+        .hero-title span{
+            color:#ff4d6d;
+        }
+
+        .hero-sub{
+            font-size:17px;
+            color:#666;
+            line-height:1.8;
+            margin-bottom:35px;
+        }
+
+        .hero-btns{
+            display:flex;
+            justify-content:center;
+            gap:15px;
+            flex-wrap:wrap;
+        }
+
+        .btn-primary{
+            padding:14px 30px;
+            border:none;
+            border-radius:10px;
+            background:#2a9fd6;
+            color:white;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .btn-primary:hover{
+            background:#1a7abf;
+        }
+
+        .btn-outline{
+            padding:14px 30px;
+            border:2px solid #2a9fd6;
+            border-radius:10px;
+            background:transparent;
+            color:#2a9fd6;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .btn-outline:hover{
+            background:#2a9fd6;
+            color:white;
+        }
+
+        /* PAGE 2 */
+        #page2{
+            min-height:100vh;
+            padding:60px 40px;
+            background:url('WENDY.jpg') center/cover no-repeat;
+            position:relative;
+        }
+
+        #page2::before{
+            content:'';
+            position:absolute;
+            inset:0;
+            background:rgba(255,255,255,0.75);
+        }
+
+        .playlist-bar,
+        .audio-box{
+            position:relative;
+            z-index:1;
+        }
+
+        .playlist-bar{
+            overflow:hidden;
+            white-space:nowrap;
+            margin-bottom:40px;
+        }
+
+        .scroll-text{
+            display:inline-block;
+            padding-left:100%;
+            animation:scrolling 18s linear infinite;
+            font-size:22px;
+            color:#222;
+            font-weight:bold;
+        }
+
+        @keyframes scrolling{
+            0%{ transform:translateX(0); }
+            100%{ transform:translateX(-100%); }
+        }
+
+        .audio-box{
+            text-align:center;
+        }
+
+        .soft2-title{
+            font-size:35px;
+            margin-bottom:20px;
+            color:#111;
+        }
+
+        .gif-row{
+            margin-top:20px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:15px;
+        }
+
+        .gif{
+            width:45px;
+            height:45px;
+        }
+
+        .gif-label{
+            color:#111;
+            font-weight:bold;
+            font-size:18px;
+        }
+
+        /* PAGE 3 & 4 */
+        #page3,
+        #page4{
+            min-height:100vh;
+            padding:60px 40px;
+            background: linear-gradient(160deg, #ffffff 50%, #e8f4fd 75%, #b0d9f0 100%);
+        }
+
+        .section-title{
+            margin-bottom:30px;
+            font-size:15px;
+            letter-spacing:2px;
+            color:#666;
+            text-transform:uppercase;
+        }
+
+        .btn-grid{
+            display:flex;
+            flex-wrap:wrap;
+            gap:15px;
+        }
+
+        button{
+            box-sizing: border-box;
+        }
+
+        #page3 .uberbutton {
+            background-color: #000000;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            margin: 4px 2px;
+        }
+
+        #page3 .amazonbutton {
+            background-color: rgb(255, 216, 20);
+            border: none;
+            color: rgb(0, 0, 0);
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            width: 200px;
+            margin: 4px 2px;
+            border-radius: 49px;
+        }
+
+        #page3 .githubbutton {
+            background-color: rgb(46, 164, 79);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            margin: 4px 2px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        #page3 .bootstrapbutton {
+            background-color: rgb(121, 82, 179);
+            border: none;
+            color: rgb(255, 255, 255);
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 4px 2px;
+            border-radius: 8px;
+        }
+
+        #page3 .bootstrap2button {
+            background-color: rgb(255, 255, 255);
+            border: 1px solid rgb(108, 117, 125);
+            color: rgb(108, 117, 125);
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 4px 2px;
+            border-radius: 8px;
+        }
+
+        #page3 .linkedinbutton {
+            background-color: rgb(10, 102, 194);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 4px 2px;
+            border-radius: 49px;
+        }
+
+        #page3 .linkedin2button {
+            background-color: rgb(255, 255, 255);
+            border: 3px solid rgb(10, 102, 194);
+            color: rgb(10, 102, 194);
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 4px 2px;
+            border-radius: 49px;
+        }
+
+        #page4 .uberbutton {
+            background-color: #000000;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        #page4 .uberbutton:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        #page4 .amazonbutton {
+            background-color: rgb(255, 216, 20);
+            border: none;
+            color: rgb(0, 0, 0);
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            width: 200px;
+            margin: 4px 2px;
+            border-radius: 49px;
+            cursor: pointer;
+        }
+
+        #page4 .amazonbutton:hover {
+            background-color: rgb(207, 178, 31);
+            color: rgb(0, 0, 0);
+        }
+
+        #page4 .githubbutton {
+            background-color: rgb(46, 164, 79);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            margin: 4px 2px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #page4 .bootstrapbutton {
+            background-color: rgb(121, 82, 179);
+            border: none;
+            color: rgb(255, 255, 255);
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 4px 2px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #page4 .bootstrapbutton:hover {
+            background-color: rgb(75, 44, 124);
+            color: rgb(255, 255, 255);
+        }
+
+        #page4 .bootstrap2button {
+            background-color: rgb(255, 255, 255);
+            border: 1px solid rgb(108, 117, 125);
+            color: rgb(108, 117, 125);
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 4px 2px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #page4 .bootstrap2button:hover {
+            background-color: rgb(108, 117, 125);
+            border: 1px solid rgb(108, 117, 125);
+            color: rgb(255, 255, 255);
+        }
+
+        #page4 .linkedinbutton {
+            background-color: rgb(10, 102, 194);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 4px 2px;
+            border-radius: 49px;
+            cursor: pointer;
+        }
+
+        #page4 .linkedinbutton:hover {
+            background-color: rgb(19, 82, 146);
+            color: white;
+        }
+
+        #page4 .linkedin2button {
+            background-color: rgb(255, 255, 255);
+            border: 3px solid rgb(10, 102, 194);
+            color: rgb(10, 102, 194);
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 4px 2px;
+            border-radius: 49px;
+            cursor: pointer;
+        }
+
+        #page4 .linkedin2button:hover {
+            background-color: rgb(76, 159, 243);
+            border: 3px solid rgb(10, 102, 194);
+            color: white;
+        }
+
+        /* HOVER EFFECTS */
+        #page4 button{
+            transition:0.3s;
+        }
+
+        #page4 button:hover{
+            transform:translateY(-3px);
+        }
+
+        #page4 .githubbutton:hover{
+            box-shadow:0 8px 18px rgba(0,0,0,0.15);
+        }
+
+        /* PAGINATION */
+        .pagination-bar{
+            position:fixed;
+            bottom:0;
+            left:0;
+            right:0;
+            background: linear-gradient(to right, #ffffff, #e8f4fd, #b0d9f0);
+            border-top:2px solid #87ceeb;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:10px;
+            padding:12px;
+        }
+
+        .page-btn{
+            width:42px;
+            height:42px;
+            border:none;
+            border-radius:10px;
+            background:#e8f4fd;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .page-btn:hover,
+        .page-btn.active{
+            background:#2a9fd6;
+            color:white;
+        }
+
+        .prev-next{
+            width:auto;
+            padding:0 18px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+    <div class="login-box">
+        <h1>Hello 👋🏼</h1>
+        <p>Please sign in to continue</p>
+
+        <div class="error-msg" id="error-msg">
+            Please fill in all fields.
+        </div>
+
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+
+        <button onclick="doLogin()">Login</button>
+
+        <div class="link">
+            No account yet? <a href="#">Create one</a>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div id="main-content">
+
+<nav>
+    <a href="#" onclick="goTo(1);return false;">Hero</a>
+    <a href="#" onclick="goTo(2);return false;">Audio</a>
+    <a href="#" onclick="goTo(3);return false;">Buttons</a>
+    <a href="#" onclick="goTo(4);return false;">Effects</a>
+</nav>
+
+<!-- PAGE 1 -->
+<div class="page" id="page1">
+    <div class="hero">
+        <p class="hero-tag">Now Streaming</p>
+
+        <h1 class="hero-title">
+            Chapter <span>You</span>
+        </h1>
+
+        <p class="hero-sub">
+            Experience the feeling of WENDY’s CERULEAN VERGE album with immersive visuals and music.
+        </p>
+
+        <div class="hero-btns">
+            <button class="btn-primary">Play Music</button>
+            <button class="btn-outline">Browse Album</button>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+
+    <div class="playlist-bar">
+        <div class="scroll-text">
+            🎵 WENDY — Chapter You 🎵
+        </div>
+    </div>
+
+    <div class="audio-box">
+        <h2 class="CERULEAN VERGE-title">CERULEAN VERGE Album</h2>
+
+        <audio controls>
+            <source src="Chapter You - 웬디 WENDY (128k).mp3" type="audio/mpeg">
+        </audio>
+
+        <div class="gif-row">
+            <img class="gif" src="hearts-wendy.gif">
+            <span class="gif-label">Listening Mode</span>
+            <img class="gif" src="hearts-wendy.gif">
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="page3">
+
+    <p class="section-title">
+        CSS Buttons
+    </p>
+
+    <div class="btn-grid">
+        <button class="uberbutton"> 
+            Request now
+        </button>
+
+        <button class="amazonbutton">
+            Add to cart
+        </button>
+
+        <button class="githubbutton">
+            Sign up
+        </button>
+
+        <button class="bootstrapbutton">
+            Get started
+        </button>
+
+        <button class="bootstrap2button">
+            Download
+        </button>
+
+        <button class="linkedinbutton">
+            Apply on company website    
+        </button>
+
+        <button class="linkedin2button">
+            Save
+        </button>
+    </div>
+
+</div>
+
+<!-- PAGE 4 -->
+<div class="page" id="page4">
+
+    <p class="section-title">
+        Hover Effects
+    </p>
+
+    <div class="btn-grid">
+        <button class="uberbutton"> 
+            Request now
+        </button>
+
+        <button class="amazonbutton">
+            Add to cart
+        </button>
+
+        <button class="githubbutton">
+            Sign up
+        </button>
+
+        <button class="bootstrapbutton">
+            Get started
+        </button>
+
+        <button class="bootstrap2button">
+            Download
+        </button>
+
+        <button class="linkedinbutton">
+            Apply on company website    
+        </button>
+
+        <button class="linkedin2button">
+            Save
+        </button>
+    </div>
+
+</div>
+
+<!-- PAGINATION -->
+<div class="pagination-bar">
+    <button class="page-btn prev-next" onclick="changePage(-1)">← Prev</button>
+
+    <button class="page-btn" id="p1" onclick="goTo(1)">1</button>
+    <button class="page-btn" id="p2" onclick="goTo(2)">2</button>
+    <button class="page-btn" id="p3" onclick="goTo(3)">3</button>
+    <button class="page-btn" id="p4" onclick="goTo(4)">4</button>
+
+    <button class="page-btn prev-next" onclick="changePage(1)">Next →</button>
+</div>
+
+</div>
+
+<script>
+
+    function doLogin() {
+
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value.trim();
+
+        if(!u || !p){
+            document.getElementById('error-msg').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+
+        goTo(1);
+    }
+
+    let current = 0;
+
+    function goTo(n){
+
+        if(current !== 0){
+            document.getElementById('page' + current).style.display = 'none';
+            document.getElementById('p' + current).classList.remove('active');
+        }
+
+        current = n;
+
+        document.getElementById('p' + current).classList.add('active');
+
+        document.getElementById('page' + current).style.display =
+        (n === 1) ? 'flex' : 'block';
+
+        window.scrollTo(0,0);
+    }
+
+    function changePage(dir){
+
+        let next = current + dir;
+
+        if(next < 1 || next > 4) return;
+
+        goTo(next);
+    }
+
+</script>
+
+</body>
+</html>
